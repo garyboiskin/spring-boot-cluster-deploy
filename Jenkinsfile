@@ -49,7 +49,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTR/$IMAGE_NAME:$BUILD_NUMBER .'
+                sh 'docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
 
@@ -69,7 +69,7 @@ pipeline {
         stage('Push Image') {
          agent any
             steps {
-                sh 'docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTR/$IMAGE_NAME:$BUILD_NUMBER'
+                sh 'docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER'
             }
         }
 
@@ -81,7 +81,7 @@ pipeline {
                         gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE
 
                         kubectl set image deployment/spring-boot-app \
-                        spring-boot-app=$REGISTRY/$PROJECT_ID/$CONTAINER_REGISTR/$IMAGE_NAME:$BUILD_NUMBER
+                        spring-boot-app=$REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER
 
                         kubectl rollout status deployment/spring-boot-app
                     '''
