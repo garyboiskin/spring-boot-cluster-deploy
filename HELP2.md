@@ -44,13 +44,18 @@ Build docker image
 
 # us-central1-docker.pkg.dev/spring-boot-demo-490202/container-registry
 $docker build -t us-central1-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT/container-registry/my-spring-app:latest .
+
+Check local docker images
+$ docker images
 Push docker image to the artifact repo:
 $docker push us-central1-docker.pkg.dev/$GOOGLE_CLOUD_PROJECT/container-registry/my-spring-app:latest
 Provision a Kubernetes cluster in GKE where your application will ru
 $gcloud container clusters create spring-boot-cluster --zone us-central1-c
 
-Once the cluster is ready, get the credentials for kubectl to connect to it: 
+Check clusters in project:
+$gcloud container clusters list
 
+Once the cluster is ready, get the credentials for kubectl to connect to it:
 $gcloud container clusters get-credentials spring-boot-cluster --zone us-central1-c
 
 Create YAML files to define the Kubernetes Deployment and Service for your application.
@@ -105,6 +110,10 @@ $kubectl rollout status deployment/spring-boot-deployment
 Step 5: Access Your Application
 Once the service is deployed (this may take a few minutes for the LoadBalancer to provision), you can get the external IP address: 
 $ kubectl get service spring-boot-service
+run curl to  get the response from the service
+$%curl http://34.44.80.243:80/hello
+Hello, World from Gary test!
+
 
 Install Jenkins
 
@@ -122,7 +131,26 @@ To allow GitHub to trigger builds on your local Jenkins instance, GitHub's serve
 $brew install ngrok/ngrok/ngrok
 Start a Tunnel: Run the following command in your Terminal (replace 8080 if your Jenkins uses a different port):
 $ngrok config add-authtoken 3B6qHXOgTU7qLcwCTIVGi9F1cfT_2yXjBZAPG9zXKvWJgxcCc
-$ ngrok http 8080
+$ngrok http 8080
+
+Copy the Forwarding URL: Look for the line starting with Forwarding. It will look something like https://a1b2-c3d4.ngrok-free.app. Keep this Terminal window open; if you close it, the tunnel will disconnect.
+2. Update Jenkins Configuration
+   In Jenkins, go to Manage Jenkins > System.
+   Find the Jenkins URL field.
+   Replace http://localhost:8080/ with your new ngrok URL (e.g., https://a1b2-c3d4.ngrok-free.app).
+
+3. Add the Webhook to GitHub
+   Go to your GitHub repository and click Settings > Webhooks > Add webhook.
+   BlazeMeter
+   BlazeMeter
+   Payload URL: Paste your ngrok URL and append /github-webhook/.
+   Medium
+   Medium
+   +3
+   Example: https://a1b2-c3d4.ngrok-free.app/github-webhook/.
+   Content type: Select application/json.
+   Which events?: Select Just the push event (or customize as needed). 
+
 
 
 
