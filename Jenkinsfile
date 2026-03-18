@@ -3,6 +3,9 @@ pipeline {
         tools {
             maven 'M3' // 'M3' should match the name from Global Tool Configuration
         }
+    agent {
+            docker { image 'node:24.14.0-alpine3.23' }
+        }
 
     environment {
         PROJECT_ID = 'spring-boot-demo-490202'
