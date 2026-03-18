@@ -1,5 +1,8 @@
 pipeline {
     agent any
+        tools {
+            maven 'M3' // 'M3' should match the name from Global Tool Configuration
+        }
 
     environment {
         PROJECT_ID = 'spring-boot-demo-490202'
