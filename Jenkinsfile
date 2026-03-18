@@ -1,11 +1,25 @@
 pipeline {
-    agent any
-        tools {
-            maven 'M3' // 'M3' should match the name from Global Tool Configuration
-        }
+
+
     agent {
-            docker { image 'node:24.14.0-alpine3.23' }
+        docker {
+            // Using Node 24.14.0 on Alpine 3.23 as requested
+            image 'maven:3.9.9-eclipse-temurin-21'
         }
+    }
+    tools {
+        // 'M3' must be configured in Manage Jenkins > Global Tool Configuration
+        maven 'M3'
+    }
+//    agent any{
+//        docker { image 'node:24.14.0-alpine3.23' }
+//        tools {
+//            maven 'M3' // 'M3' should match the name from Global Tool Configuration
+//              }
+//        }
+//    agent {
+//            docker { image 'node:24.14.0-alpine3.23' }
+//        }
 
     environment {
         PROJECT_ID = 'spring-boot-demo-490202'
@@ -20,12 +34,14 @@ pipeline {
     stages {
 
         stage('Checkout') {
+         agent any
             steps {
                 git 'https://github.com/garyboiskin/spring-boot-cluster-deploy.git'
             }
         }
 
         stage('Build JAR') {
+         agent any
             steps {
                 sh 'mvn clean package -DskipTests'
             }
@@ -38,6 +54,7 @@ pipeline {
         }
 
         stage('Authenticate to GCP') {
+         agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
@@ -50,12 +67,14 @@ pipeline {
         }
 
         stage('Push Image') {
+         agent any
             steps {
                 sh 'docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTR/$IMAGE_NAME:$BUILD_NUMBER'
             }
         }
 
         stage('Deploy to GKE') {
+         agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
