@@ -151,5 +151,20 @@ Copy the Forwarding URL: Look for the line starting with Forwarding. It will loo
 
 
 
+Step 1: Create Service Account (GCP) ( for jenkins)
+Go to IAM & Admin → Service Accounts
+Click Create Service Account
+Name: jenkins-deployer
 
+Step 2: Assign Required Roles
+For GKE + Artifact Registry, assign:
+Kubernetes Engine Admin
+Artifact Registry Writer
+Storage Admin (optional, if using legacy registry)
 
+Step 3: Download JSON Key
+Click your service account
+Go to Keys tab
+Click Add Key → Create new key
+Choose JSON
+Download file (e.g., jenkins-gcp-key.json)
