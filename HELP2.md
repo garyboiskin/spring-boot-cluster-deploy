@@ -168,3 +168,14 @@ Go to Keys tab
 Click Add Key → Create new key
 Choose JSON
 Download file (e.g., jenkins-gcp-key.json)
+
+Step 4: Add JSON Key to Jenkins
+In Jenkins:
+Go to:
+Manage Jenkins → Credentials → Global → Add Credentials
+Choose:
+Kind: Secret file
+Upload: your JSON file
+ID: gcp-key ✅ (used in pipeline)
+Description: GCP Service Account
+
