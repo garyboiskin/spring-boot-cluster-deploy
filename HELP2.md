@@ -144,7 +144,6 @@ Copy the Forwarding URL: Look for the line starting with Forwarding. It will loo
    BlazeMeter
    Payload URL: Paste your ngrok URL and append /github-webhook/.
    Medium
-   
    Example: https://a1b2-c3d4.ngrok-free.app/github-webhook/.
    Content type: Select application/json.
    Which events?: Select Just the push event (or customize as needed). 
