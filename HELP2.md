@@ -179,3 +179,8 @@ Upload: your JSON file
 ID: gcp-key ✅ (used in pipeline)
 Description: GCP Service Account
 
+step 5:
+In pipeline configuration set Trigger to 
+GitHub hook trigger for GITScm polling
+
+
