@@ -57,8 +57,8 @@ agent any
 
         stage('Build Docker Image') {
             steps {
-                sh '/usr/local/bin/docker ps'
-                sh '/usr/local/bin/docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER .'
+                sh 'docker ps'
+                sh 'docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
 
@@ -67,9 +67,9 @@ agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
-                        /usr/local/bin/gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-                        /usr/local/bin/gcloud config set project $PROJECT_ID
-                        /usr/local/bin/gcloud auth configure-docker
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        gcloud config set project $PROJECT_ID
+                        gcloud auth configure-docker
                     '''
                 }
             }
@@ -79,7 +79,7 @@ agent any
         // agent any
             steps {
 
-                sh '/usr/local/bin/docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER'
+                sh 'docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER'
             }
         }
 
@@ -88,7 +88,7 @@ agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
-                        /usr/local/bin/gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE
+                        gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE
                         kubectl apply -f deployment.yaml
                         kubectl apply -f service.yaml
                     '''
