@@ -1,15 +1,19 @@
 pipeline {
 
-
-    agent {
-        docker {
-            // Using Node 24.14.0 on Alpine 3.23 as requested
-            image 'maven:3.9.9-eclipse-temurin-21'
-        }
-    }
+agent any
+    // environment {
+    //     PATH = "/path/to/google-cloud-sdk/bin:${env.PATH}"
+    // }
+//    agent {
+//        docker {
+//            // Using Node 24.14.0 on Alpine 3.23 as requested
+//            image 'maven:3.9.9-eclipse-temurin-21'
+//        }
+//    }
     tools {
         // 'M3' must be configured in Manage Jenkins > Global Tool Configuration
         maven 'M3'
+      //  dockerTool 'MyDocker'
     }
 //    agent any{
 //        docker { image 'node:24.14.0-alpine3.23' }
@@ -22,6 +26,9 @@ pipeline {
 //        }
 
     environment {
+       // PATH = "/usr/local/bin:${env.PATH}"
+               // Appends to the existing PATH
+        PATH = "/usr/local/bin:${env.PATH}"
         PROJECT_ID = 'spring-boot-demo-490202'
         IMAGE_NAME = 'my-spring-app'
         CLUSTER_NAME = 'spring-boot-cluster'
@@ -34,14 +41,15 @@ pipeline {
     stages {
 
         stage('Checkout') {
-         agent any
+       //  agent any
             steps {
+                sh 'echo "PATH is: $PATH"'
                 git 'https://github.com/garyboiskin/spring-boot-cluster-deploy.git'
             }
         }
 
         stage('Build JAR') {
-         agent any
+        // agent any
             steps {
                 sh 'mvn clean package -DskipTests'
             }
@@ -49,41 +57,40 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER .'
+                sh '/usr/local/bin/docker ps'
+                sh '/usr/local/bin/docker build -t $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
 
         stage('Authenticate to GCP') {
-         agent any
+        // agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
-                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-                        gcloud config set project $PROJECT_ID
-                        gcloud auth configure-docker
+                        /usr/local/bin/gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        /usr/local/bin/gcloud config set project $PROJECT_ID
+                        /usr/local/bin/gcloud auth configure-docker
                     '''
                 }
             }
         }
 
         stage('Push Image') {
-         agent any
+        // agent any
             steps {
-                sh 'docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER'
+
+                sh '/usr/local/bin/docker push $REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER'
             }
         }
 
         stage('Deploy to GKE') {
-         agent any
+        // agent any
             steps {
                 withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
-                        gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE
-
-                        kubectl set image deployment/spring-boot-app \
-                        spring-boot-app=$REGISTRY/$PROJECT_ID/$CONTAINER_REGISTRY/$IMAGE_NAME:$BUILD_NUMBER
-
-                        kubectl rollout status deployment/spring-boot-app
+                        /usr/local/bin/gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE
+                        kubectl apply -f deployment.yaml
+                        kubectl apply -f service.yaml
                     '''
                 }
             }
