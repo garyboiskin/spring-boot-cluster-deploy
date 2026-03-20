@@ -4,6 +4,7 @@ agent any
   triggers {
     githubPush()
   }
+  // test push
     // environment {
     //     PATH = "/path/to/google-cloud-sdk/bin:${env.PATH}"
     // }
