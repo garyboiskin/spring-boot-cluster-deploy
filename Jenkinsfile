@@ -1,6 +1,9 @@
 pipeline {
 
 agent any
+  triggers {
+    githubPush()
+  }
     // environment {
     //     PATH = "/path/to/google-cloud-sdk/bin:${env.PATH}"
     // }
